@@ -13,11 +13,13 @@
   "author": "vuk",
   "license": "ISC",
   "devDependencies": {
+    "@types/uuid": "^9.0.8",
     "dotenv": "^16.4.1",
     "nodemon": "^3.0.3",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
+    "uuid": "^9.0.1",
     "webpack": "^5.90.1",
     "webpack-cli": "^5.1.4"
   },
