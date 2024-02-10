@@ -3,9 +3,26 @@
   "version": "1.0.0",
   "description": "Implementation of a simple CRUD API using an in-memory database",
   "main": "index.js",
+  "type": "module",
   "scripts": {
+    "start nodemon": "nodemon -I --exec node --experimental-specifier-resolution=node  --loader ts-node/esm ./src/index.ts",
+    "PROD": "webpack --env production",
+    "DEV": "webpack --env development",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "vuk",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^16.4.1",
+    "nodemon": "^3.0.3",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.1",
+    "webpack-cli": "^5.1.4"
+  },
+  "browser": {
+    "path": false,
+    "url": false
+  }
 }
