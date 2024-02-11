@@ -76,7 +76,7 @@ const tryAddUser = (user: string) => {
 const getAllUsers = (res: ServerResponse, users: Array<UserType>) => {
   res.statusCode = StatusCode.SuccessOK;
   res.setHeader("Content-Type", JsonContentType)
-  return res.end(users)
+  return res.end(JSON.stringify(users))
 }
 
 const addUser = (res: ServerResponse, users: Array<UserType>, user: string) => {
@@ -85,7 +85,7 @@ const addUser = (res: ServerResponse, users: Array<UserType>, user: string) => {
     users.push(newUser);
     res.statusCode = StatusCode.SuccessCreated;
     res.setHeader("Content-Type", JsonContentType)
-    res.end(newUser)
+    res.end(JSON.stringify(newUser))
   } catch (e) {
     if (e instanceof BadRequestError) {
       res.setHeader("Content-Type", TextContentType)
