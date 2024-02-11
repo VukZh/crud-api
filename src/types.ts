@@ -5,4 +5,3 @@ export type UserType = {
   hobbies: Array<string>;
 }
 
-export type ValidationType = "notUUID" | "notExists"
