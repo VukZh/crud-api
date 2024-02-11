@@ -29,7 +29,7 @@ const tryFindUser = (users: Array<UserType>, id: string): UserType => {
     throw new BadRequestError("id isn't UUID");
   }
   const indFind = users.findIndex((_user) => {
-    _user.id === id
+    return _user.id === id
   });
   if (indFind === -1) throw new NotExistsError("user not exists");
   return users[indFind];
@@ -40,10 +40,10 @@ const tryDeleteUser = (users: Array<UserType>, id: string): boolean => {
     throw new BadRequestError("id isn't UUID");
   }
   const indFind = users.findIndex((_user) => {
-    _user.id === id
+    return _user.id === id
   });
 
-  if (indFind === -1) throw new NotExistsError("user not exists");
+  if (indFind === -1 || users.length === 0) throw new NotExistsError("user not exists");
   users.splice(indFind, 1);
   return true;
 };
@@ -55,12 +55,13 @@ const tryChangeUser = (users: Array<UserType>, user: UserType): UserType => {
     throw new BadRequestError("id isn't UUID");
   }
   const indFind = users.findIndex((_user) => {
-    _user.id === user.id
+    return _user.id === user.id
   });
 
   if (indFind === -1) throw new NotExistsError("user not exists");
 
-  users[indFind] = user;
+
+  users[indFind] = {...user};
   return user;
 };
 
@@ -100,10 +101,10 @@ const addUser = (res: ServerResponse, users: Array<UserType>, user: string) => {
 
 const getUser = (res: ServerResponse, users: Array<UserType>, id: string) => {
   try {
-    const checkUser = tryFindUser(users, id);
+    const foundUser = tryFindUser(users, id);
     res.statusCode = StatusCode.SuccessOK;
     res.setHeader("Content-Type", JsonContentType)
-    return res.end(checkUser)
+    return res.end(JSON.stringify(foundUser))
   } catch (e) {
     if (e instanceof BadRequestError) {
       res.setHeader("Content-Type", TextContentType)
@@ -123,10 +124,10 @@ const getUser = (res: ServerResponse, users: Array<UserType>, id: string) => {
 
 const delUser = (res: ServerResponse, users: Array<UserType>, id: string) => {
   try {
-    const checkUser = tryDeleteUser(users, id);
+    tryDeleteUser(users, id);
     res.statusCode = StatusCode.SuccessDeleted;
     res.setHeader("Content-Type", TextContentType)
-    return res.end()
+    return res.end("user deleted")
   } catch (e) {
     if (e instanceof BadRequestError) {
       res.setHeader("Content-Type", TextContentType)
@@ -143,12 +144,14 @@ const delUser = (res: ServerResponse, users: Array<UserType>, id: string) => {
   }
 }
 
-const changeUser = (res: ServerResponse, users: Array<UserType>, user: UserType) => {
+const changeUser = (res: ServerResponse, users: Array<UserType>, user: string, id: string) => {
   try {
-    const checkUser = tryChangeUser(users, user);
+    const parsedUser = JSON.parse(user);
+    const updatedUser = parsedUser?.id ? {...parsedUser} : {...parsedUser, id: id}
+    const changedUser = tryChangeUser(users, updatedUser);
     res.statusCode = StatusCode.SuccessOK;
     res.setHeader("Content-Type", JsonContentType)
-    return res.end(checkUser)
+    return res.end(JSON.stringify(changedUser))
   } catch (e) {
     if (e instanceof BadRequestError) {
       res.setHeader("Content-Type", TextContentType)
@@ -165,6 +168,13 @@ const changeUser = (res: ServerResponse, users: Array<UserType>, user: UserType)
   }
 }
 
-export {getAllUsers, changeUser, delUser, addUser, getUser};
+const notExistingEndpoint = (res: ServerResponse) => {
+  res.statusCode = StatusCode.ClientErrorNotFound;
+  res.setHeader("Content-Type", TextContentType)
+  return res.end("url doesn't exist")
+}
+
+
+export {getAllUsers, changeUser, delUser, addUser, getUser, notExistingEndpoint};
 
 
