@@ -1,5 +1,6 @@
 import * as path from 'path';
 import {fileURLToPath} from 'url';
+import Dotenv from "dotenv-webpack";
 
 const wpc = (env = {}) => {
     const isProd = env.production;
@@ -24,7 +25,16 @@ const wpc = (env = {}) => {
         output: {
             path: path.resolve(__dirname, './dist'),
             filename: 'bundle.js',
+            module: true,
+            chunkFormat: 'module'
         },
+        experiments: {
+            outputModule: true,
+        },
+        target: 'node',
+        plugins: [
+            new Dotenv()
+        ]
     }
 }
 

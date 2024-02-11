@@ -1,12 +1,16 @@
 import * as http from "http";
 import {config} from "dotenv";
 import * as process from "process";
-import {UserType} from "./types.js";
-import {addUser, changeUser, delUser, getAllUsers, getUser, notExistingEndpoint} from "./helpers.js";
+// @ts-ignore
+import {UserType} from "./types.ts";
+// @ts-ignore
+import {addUser, changeUser, delUser, getAllUsers, getUser, notExistingEndpoint} from "./helpers.ts";
 import * as urlModule from "url";
 
 config();
 const users: Array<UserType> = [];
+
+const PORT = process.env.PORT ? process.env.PORT : 4000
 
 http
   .createServer(function (req, res) {
@@ -45,4 +49,6 @@ http
       return notExistingEndpoint(res);
     }
   })
-  .listen(process.env.PORT);
+  .listen(PORT, () => {
+    console.info(`Listen on ${PORT} port`)
+  });

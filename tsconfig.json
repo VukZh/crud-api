@@ -1,22 +1,8 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
-    "sourceMap": true,
-    "noImplicitAny": true,
     "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "target": "ESNext",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "lib": [
-      "es2017",
-    ],
-    "allowJs": true,
-    "strict": false,
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "target": "es5",
+    "esModuleInterop": true
   },
   "include": [
     "src/**/*"

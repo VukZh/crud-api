@@ -1,6 +1,8 @@
 import {v4 as uuidv4, version, validate} from 'uuid';
-import {UserType} from "./types.js";
-import {JsonContentType, messages, StatusCode, TextContentType} from "./constants.js";
+// @ts-ignore
+import {UserType} from "./types.ts";
+// @ts-ignore
+import {JsonContentType, messages, StatusCode, TextContentType} from "./constants.ts";
 import {ServerResponse} from 'http';
 
 export const generateUUID = () => uuidv4();

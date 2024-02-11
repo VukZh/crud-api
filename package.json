@@ -5,16 +5,18 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start nodemon": "nodemon -I --exec node --experimental-specifier-resolution=node  --loader ts-node/esm ./src/index.ts",
-    "PROD": "webpack --env production",
-    "DEV": "webpack --env development",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:dev": "nodemon -I --exec node --experimental-specifier-resolution=node  --loader ts-node/esm ./src/index.ts",
+    "start:prod": "npm run WP:PROD && npm run start:bundle",
+    "start:bundle": "node ./dist/bundle.js",
+    "WP:PROD": "webpack --env production",
+    "WP:DEV": "webpack --env development"
   },
   "author": "vuk",
   "license": "ISC",
   "devDependencies": {
     "@types/uuid": "^9.0.8",
     "dotenv": "^16.4.1",
+    "dotenv-webpack": "^8.0.1",
     "nodemon": "^3.0.3",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
