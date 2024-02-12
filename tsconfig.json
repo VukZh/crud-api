@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "target": "es5",
+    "esModuleInterop": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "files": [
+    "./src/index.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "__test__"
+  ],
+}
