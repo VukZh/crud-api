@@ -19,7 +19,6 @@ http
     if (parsedURL[parsedURL.length - 1] === "") {
       parsedURL.pop();
     }
-    console.log(":>", method, url, parsedURL)
 
     if (method === "GET" && parsedURL.length === 3 && (parsedURL[1] + "-" + parsedURL[2]) === "api-users") {
       return getAllUsers(res, users);

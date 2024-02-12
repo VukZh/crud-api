@@ -20,7 +20,6 @@ const tryFindUser = (users: Array<UserType>, id: string): UserType => {
   const indFind = users.findIndex((_user) => {
     return _user.id === id
   });
-  console.log("1", users, id, indFind)
   if (indFind === -1) throw new Error(notExists);
   return users[indFind];
 };
@@ -50,6 +49,9 @@ const tryChangeUser = (users: Array<UserType>, user: UserType): UserType => {
 
   if (indFind === -1) throw new Error(notExists);
 
+  if (!user?.username || typeof user.username !== "string" || !user?.age || typeof user.age !== "number" || !user?.hobbies || !Array.isArray(user.hobbies) || !user.hobbies.every((h: any) => typeof h === "string")) {
+    throw new Error(incorrectData);
+  }
 
   users[indFind] = {...user};
   return user;
@@ -58,7 +60,6 @@ const tryChangeUser = (users: Array<UserType>, user: UserType): UserType => {
 const tryAddUser = (user: string) => {
   const checkedUser = JSON.parse(user);
   if (!checkedUser?.username || typeof checkedUser.username !== "string" || !checkedUser?.age || typeof checkedUser.age !== "number" || !checkedUser?.hobbies || !Array.isArray(checkedUser.hobbies) || !checkedUser.hobbies.every((h: any) => typeof h === "string")) {
-    console.log("ggg")
     throw new Error(incorrectData);
   }
   return {...checkedUser, id: generateUUID()};
@@ -97,21 +98,15 @@ const getUser = (res: ServerResponse, users: Array<UserType>, id: string) => {
     res.setHeader("Content-Type", JsonContentType)
     return res.end(JSON.stringify(foundUser))
   } catch (e) {
-    console.log("e", e)
     if (e.message === notUUID) {
-      console.log(1)
       res.setHeader("Content-Type", TextContentType)
       res.statusCode = StatusCode.ClientErrorBadRequest;
       return res.end(messages[StatusCode.ClientErrorBadRequest])
     } else if (e.message === notExists) {
-      console.log(2)
-
       res.setHeader("Content-Type", TextContentType)
       res.statusCode = StatusCode.ClientErrorNotFound;
       return res.end(messages[StatusCode.ClientErrorNotFound])
     }
-    console.log(3)
-
     res.setHeader("Content-Type", TextContentType)
     res.statusCode = StatusCode.ServerInternalError;
     return res.end(messages[StatusCode.ServerInternalError])
@@ -158,6 +153,10 @@ const changeUser = (res: ServerResponse, users: Array<UserType>, user: string, i
       res.setHeader("Content-Type", TextContentType)
       res.statusCode = StatusCode.ClientErrorNotFound;
       return res.end(messages[StatusCode.ClientErrorNotFound])
+    } else if (e.message === incorrectData) {
+      res.setHeader("Content-Type", TextContentType)
+      res.statusCode = StatusCode.ClientErrorBadRequest;
+      return res.end("Not contain required fields")
     }
     res.setHeader("Content-Type", TextContentType)
     res.statusCode = StatusCode.ServerInternalError;
