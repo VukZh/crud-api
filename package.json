@@ -9,15 +9,20 @@
     "start:prod": "npm run WP:PROD && npm run start:bundle",
     "start:bundle": "node ./dist/bundle.js",
     "WP:PROD": "webpack --env production",
-    "WP:DEV": "webpack --env development"
+    "WP:DEV": "webpack --env development",
+    "test": "jest --verbose"
   },
   "author": "vuk",
   "license": "ISC",
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "@types/uuid": "^9.0.8",
     "dotenv": "^16.4.1",
     "dotenv-webpack": "^8.0.1",
+    "jest": "^29.7.0",
     "nodemon": "^3.0.3",
+    "supertest": "^6.3.4",
+    "ts-jest": "^29.1.2",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",

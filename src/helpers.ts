@@ -2,7 +2,7 @@ import {v4 as uuidv4, version, validate} from 'uuid';
 // @ts-ignore
 import {UserType} from "./types.ts";
 // @ts-ignore
-import {JsonContentType, messages, StatusCode, TextContentType} from "./constants.ts";
+import { incorrectData, JsonContentType, messages, notExists, notUUID, StatusCode, TextContentType } from "./constants.ts";
 import {ServerResponse} from 'http';
 
 export const generateUUID = () => uuidv4();
@@ -11,41 +11,29 @@ const uuidV4Validate = (uuid: string): boolean => {
   return validate(uuid) && version(uuid) === 4;
 }
 
-class NotExistsError extends Error {
-  constructor(msg: string) {
-    super(msg);
-    this.name = "NotExistsError"
-  }
-}
-
-class BadRequestError extends Error {
-  constructor(msg: string) {
-    super(msg);
-    this.name = "BadRequestError"
-  }
-}
-
 const tryFindUser = (users: Array<UserType>, id: string): UserType => {
   const isUUID = uuidV4Validate(id);
   if (!isUUID) {
-    throw new BadRequestError("id isn't UUID");
+    throw new Error(notUUID);
   }
+
   const indFind = users.findIndex((_user) => {
     return _user.id === id
   });
-  if (indFind === -1) throw new NotExistsError("user not exists");
+  console.log("1", users, id, indFind)
+  if (indFind === -1) throw new Error(notExists);
   return users[indFind];
 };
 const tryDeleteUser = (users: Array<UserType>, id: string): boolean => {
   const isUUID = uuidV4Validate(id);
   if (!isUUID) {
-    throw new BadRequestError("id isn't UUID");
+    throw new Error(notUUID);
   }
   const indFind = users.findIndex((_user) => {
     return _user.id === id
   });
 
-  if (indFind === -1 || users.length === 0) throw new NotExistsError("user not exists");
+  if (indFind === -1 || users.length === 0) throw new Error(notExists);
   users.splice(indFind, 1);
   return true;
 };
@@ -54,13 +42,13 @@ const tryDeleteUser = (users: Array<UserType>, id: string): boolean => {
 const tryChangeUser = (users: Array<UserType>, user: UserType): UserType => {
   const isUUID = uuidV4Validate(user.id);
   if (!isUUID) {
-    throw new BadRequestError("id isn't UUID");
+    throw new Error(notUUID);
   }
   const indFind = users.findIndex((_user) => {
     return _user.id === user.id
   });
 
-  if (indFind === -1) throw new NotExistsError("user not exists");
+  if (indFind === -1) throw new Error(notExists);
 
 
   users[indFind] = {...user};
@@ -70,7 +58,8 @@ const tryChangeUser = (users: Array<UserType>, user: UserType): UserType => {
 const tryAddUser = (user: string) => {
   const checkedUser = JSON.parse(user);
   if (!checkedUser?.username || typeof checkedUser.username !== "string" || !checkedUser?.age || typeof checkedUser.age !== "number" || !checkedUser?.hobbies || !Array.isArray(checkedUser.hobbies) || !checkedUser.hobbies.every((h: any) => typeof h === "string")) {
-    throw new BadRequestError("it not contain required fields");
+    console.log("ggg")
+    throw new Error(incorrectData);
   }
   return {...checkedUser, id: generateUUID()};
 }
@@ -90,7 +79,7 @@ const addUser = (res: ServerResponse, users: Array<UserType>, user: string) => {
     res.setHeader("Content-Type", JsonContentType)
     res.end(JSON.stringify(newUser))
   } catch (e) {
-    if (e instanceof BadRequestError) {
+    if (e.message === incorrectData) {
       res.setHeader("Content-Type", TextContentType)
       res.statusCode = StatusCode.ClientErrorBadRequest;
       return res.end("Not contain required fields")
@@ -108,15 +97,21 @@ const getUser = (res: ServerResponse, users: Array<UserType>, id: string) => {
     res.setHeader("Content-Type", JsonContentType)
     return res.end(JSON.stringify(foundUser))
   } catch (e) {
-    if (e instanceof BadRequestError) {
+    console.log("e", e)
+    if (e.message === notUUID) {
+      console.log(1)
       res.setHeader("Content-Type", TextContentType)
       res.statusCode = StatusCode.ClientErrorBadRequest;
       return res.end(messages[StatusCode.ClientErrorBadRequest])
-    } else if (e instanceof NotExistsError) {
+    } else if (e.message === notExists) {
+      console.log(2)
+
       res.setHeader("Content-Type", TextContentType)
       res.statusCode = StatusCode.ClientErrorNotFound;
       return res.end(messages[StatusCode.ClientErrorNotFound])
     }
+    console.log(3)
+
     res.setHeader("Content-Type", TextContentType)
     res.statusCode = StatusCode.ServerInternalError;
     return res.end(messages[StatusCode.ServerInternalError])
@@ -131,11 +126,11 @@ const delUser = (res: ServerResponse, users: Array<UserType>, id: string) => {
     res.setHeader("Content-Type", TextContentType)
     return res.end("user deleted")
   } catch (e) {
-    if (e instanceof BadRequestError) {
+    if (e.message === notUUID) {
       res.setHeader("Content-Type", TextContentType)
       res.statusCode = StatusCode.ClientErrorBadRequest;
       return res.end(messages[StatusCode.ClientErrorBadRequest])
-    } else if (e instanceof NotExistsError) {
+    } else if (e.message === notExists) {
       res.setHeader("Content-Type", TextContentType)
       res.statusCode = StatusCode.ClientErrorNotFound;
       return res.end(messages[StatusCode.ClientErrorNotFound])
@@ -155,11 +150,11 @@ const changeUser = (res: ServerResponse, users: Array<UserType>, user: string, i
     res.setHeader("Content-Type", JsonContentType)
     return res.end(JSON.stringify(changedUser))
   } catch (e) {
-    if (e instanceof BadRequestError) {
+    if (e.message === notUUID) {
       res.setHeader("Content-Type", TextContentType)
       res.statusCode = StatusCode.ClientErrorBadRequest;
       return res.end(messages[StatusCode.ClientErrorBadRequest])
-    } else if (e instanceof NotExistsError) {
+    } else if (e.message === notExists) {
       res.setHeader("Content-Type", TextContentType)
       res.statusCode = StatusCode.ClientErrorNotFound;
       return res.end(messages[StatusCode.ClientErrorNotFound])

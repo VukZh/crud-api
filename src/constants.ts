@@ -15,3 +15,7 @@ export const messages: Partial<{ [key in StatusCode]: string }> = {
   [StatusCode.ClientErrorNotFound]: "Record doesn't exist",
   [StatusCode.ServerInternalError]: 'Internal Server Error',
 };
+
+export const notUUID = "isn't UUID";
+export const notExists = "user not exists";
+export const incorrectData = "it not contain required fields";
